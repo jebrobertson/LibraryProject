@@ -1,0 +1,41 @@
+Create type userRank as enum ('Admin', 'Librarian', 'Default');
+CREATE TABLE Users(
+	UserID SERIAL,
+	Password varchar(50),
+	Rank userRank,
+	Email varchar(50),
+	FirstName varchar(20),
+	LastName varchar(20),
+	PhoneNumber varchar(12),
+	PRIMARY KEY(UserID)
+);
+
+CREATE TABLE Books(
+	ISBN varchar(13) NOT NULL,
+	AuthorFirst varchar(20),
+	AuthorLast varchar(20),
+	Title varchar(100),
+	Genre varchar(20),
+	PRIMARY KEY(ISBN)
+);
+
+create type bookstatus as enum('Returned', 'In Queue', 'Rented Out');
+CREATE TABLE Rentals(
+	UserID int,
+	ISBN varchar(13),
+	UserRating int,
+	Status ENUM('Returned', 'In Queue', 'Rented Out'),
+	DateUpdated date,
+	Foreign Key (UserID) references Users(UserID),
+	Foreign Key (ISBN) references Books(ISBN),
+	PRIMARY KEY (UserID, ISBN)
+);
+
+CREATE TABLE Log(
+	LogID SERIAL,
+	actionTime timestamp,
+	action varchar(20),
+	UserID int,
+	foreign key (UserID) references Users(UserID),
+	primary key (LogID)
+);
