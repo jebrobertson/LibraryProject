@@ -1,4 +1,9 @@
 Create type userRank as enum ('Admin', 'Librarian', 'Default');
+DROP TABLE IF EXISTS Users;
+DROP TABLE IF EXISTS Books;
+DROP TABLE IF EXISTS Rentals;
+DROP TABLE IF EXISTS Ratings;
+DROP TABLE IF EXISTS Log;
 CREATE TABLE Users(
 	UserID SERIAL,
 	Password varchar(50),
@@ -10,25 +15,36 @@ CREATE TABLE Users(
 	PRIMARY KEY(UserID)
 );
 
+
 CREATE TABLE Books(
 	ISBN varchar(13) NOT NULL,
-	AuthorFirst varchar(20),
-	AuthorLast varchar(20),
+	Authors varchar(100),
+	YearPublished numeric(4),
 	Title varchar(100),
 	Genre varchar(20),
 	PRIMARY KEY(ISBN)
 );
 
 create type bookstatus as enum('Returned', 'In Queue', 'Rented Out');
+
 CREATE TABLE Rentals(
 	UserID int,
 	ISBN varchar(13),
 	UserRating int,
-	Status ENUM('Returned', 'In Queue', 'Rented Out'),
+	Status bookstatus,
 	DateUpdated date,
 	Foreign Key (UserID) references Users(UserID),
 	Foreign Key (ISBN) references Books(ISBN),
 	PRIMARY KEY (UserID, ISBN)
+);
+
+CREATE TABLE Ratings(
+	UserID int,
+	ISBN varchar(13),
+	UserRating int,
+	Foreign Key (UserID) references Users(UserID),
+	Foreign Key (ISBN) references Books(ISBN),
+	PRIMARY KEY(UserId, ISBN)
 );
 
 CREATE TABLE Log(
