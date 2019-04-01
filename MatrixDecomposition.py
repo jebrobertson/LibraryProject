@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python36
 try:
     import numpy
 except:
@@ -16,28 +16,30 @@ except:
 	beta	: the regularization 
 """
 
-def matrix_decomposition(R, P, Q, K, iterations=5000, alpha=.0002, beta=.02):
+def matrix_decomposition(R, P, Q, K, iterations=50000, alpha=.0002, beta=.02):
     Q = Q.T
     for step in range(iterations):
         for i in range(len(R)):
             for j in range(len(R[i])):
                 if R[i][j] > 0:
-                    error = R[i][j] - numpy.dot(P[i], Q[:,j])
+                    error = R[i][j] - numpy.dot(P[i,:], Q[:,j])
                     for k in range(K):
+                        oldP = P[i][k]
                         P[i][k] += 2 * alpha * error * Q[k][j] - alpha * beta * P[i][k]
                         Q[k][j] += 2 * alpha * error * P[i][k] - alpha * beta * Q[k][j]
 
-            eR = numpy.dot(P,Q)
-            totalError = 0
-            for i in range(len(R)):
-                for j in range(len(R[i])):
-                    if R[i][j] > 0:
-                        totalError += pow(R[i][j] - numpy.dot(P[i], Q[:,j]), 2)
-                        for k in range(K):
-                            totalError += (beta/2) * ( pow(P[i][k], 2) + pow(Q[k][j], 2))
-            if totalError < .001:
-                break
-        return P, Q.T
+        eR = numpy.dot(P,Q)
+        totalError = 0
+        for i in range(len(R)):
+            for j in range(len(R[i])):
+                if R[i][j] > 0:
+                    totalError += pow(R[i][j] - numpy.dot(P[i, :], Q[:,j]), 2)
+                    for k in range(K):
+                        totalError += (beta/2) * ( pow(P[i][k], 2) + pow(Q[k][j], 2))
+        if totalError < .001:
+            print("Error Here")
+            break
+    return P, Q.T
 
 
 
@@ -64,4 +66,4 @@ if __name__ == "__main__":
     nP, nQ = matrix_decomposition(R, P, Q, K)
     print(nP)
     print(nQ)
-    print(nP @ nQ.T)
+    print(numpy.matmul(nP, nQ.T))
