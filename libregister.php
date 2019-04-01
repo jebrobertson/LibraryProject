@@ -1,75 +1,27 @@
 <?php
 
-//Include config file
+//include config file
 require_once 'libconfig.php';
 
-
-//Define variables and initialize with empty values
-$username = $password = "";
-$username_err = $password_err = "";
-
-
-//Process form data when form is submitted
-if($_SERVER["REQUEST_METHOD"] == "POST"){
-/*
-    if(empty(trim($_POST["username"]))){
-        $username_err = "Please enter username";
+if(!empty($_POST['add'])){
+    //$pass = hash('md5', '$_POST[password]');
+    $query = "INSERT INTO login VALUES('$_POST[username]', '$_POST[password]')";
+    $result = pg_query($query);
+    if(!result){
+        echo "Error occurred";
     }
     else{
-        $username = trim($_POST["username"]);
+        echo "success";
     }
-    
-    //check if password is empty
-    if(empty(trim($_POST['password']))){
-        $password_err = 'Please enter your password.';
-    }
-    else{
-        $password = trim($_POST['password']);
-    }
-*/
-    //validate credentials
-    if(empty($username_err) && empty($password_err)){
-        //try to prevent SQL-Injection
-        $query = 'SELECT * FROM login WHERE username=$1 AND password=$2';
-        //$result = pg_query_params($db, $query, array($_POST["username"], $_POST["password"]));
-        $result = pg_prepare($db, "", $query);
-        $result = pg_execute($db, "", array($_POST["username"], $_POST["password"]));
-        if(!result){
-            echo "result null";
-        }
-        else{
-            echo "result good";
-            $rows = pg_num_rows($result);
-            echo $rows . "row(s) returned.\n";
-        }
-        
-        if(pg_num_rows($result) < 1){
-            echo nl2br("Username or Password does not exist.\n Please Try Again.\n Page will refresh in 5\n");
-            header('Refresh: 5; URL=http://ec2-3-94-120-99.compute-1.amazonaws.com');
-        }
-        else if(pg_num_rows($result) == 1){
-            //save username to session
-            session_start();
-            $_SESSION['username'] = $username;
-            header("location: index.html");
-        }
-    }
-
-
-  //close connection
-    pg_close($dbconn);
-
 }
 
 
 ?>
 
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<title>LibrarEZ Login</title>
-	<meta charset="UTF-8">
+<html>
+    <head>
+        <title>Register</title>
+        <meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
 	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
@@ -100,10 +52,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
     <!-- Custom styles for this template -->
     <link href="css/blog-home.css" rel="stylesheet">
+    </head>
+</html>
 
-</head>
 <body>
-     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
       <div class="container">
         <a class="navbar-brand" href="index.html">LibrarEZ</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
@@ -125,40 +78,29 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         </div>
       </div>
     </nav>
-	
-	<div class="limiter">
-		<div class="container-login100" style="background-image: url('images/bg-01.jpg');">
-			<div class="wrap-login100 p-t-30 p-b-50">
-				<span class="login100-form-title p-b-41">
-					Login
-				</span>
-				<form class="login100-form validate-form p-b-33 p-t-5" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-
-					<div class="wrap-input100 validate-input" data-validate = "Enter username">
-						<input class="input100" type="text" name="username" placeholder="User name">
-						<span class="focus-input100" data-placeholder="&#xe82a;"></span>
-					</div>
-
-					<div class="wrap-input100 validate-input" data-validate="Enter password">
-						<input class="input100" type="password" name="password" placeholder="Password">
-						<span class="focus-input100" data-placeholder="&#xe80f;"></span>
-					</div>
-
-					<div class="container-login100-form-btn m-t-32">
-						<button class="login100-form-btn">
-							Login
-						</button>
-					</div>
-
-				</form>
-			</div>
-		</div>
-	</div>
-	
-
-	<div id="dropDownSelect1"></div>
-	
-<!--===============================================================================================-->
+    <div class="limiter">
+        <div class="container-login100" style="background-image: url('images/bg-01.jpg');">
+            <div class="wrap-login100 p-t-30 p-b-50">
+            <span class="login100-form-title p-b-41">Register</span>
+            <form class="login100-form validate-form p-b-33 p-t-5" action="libregister.php" method="post">
+                <div class="wrap-input100 validate-input" data-validate = "Enter username">
+                    <input class="input100" type="text" name="username" placeholder="Create Username">
+                    <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+                </div>
+                <div class="wrap-input100 validate-input" data-validate="Enter password">
+                    <input class="input100" type="password" name="password" placeholder="Create Password">
+                    <span class="focus-input100" data-placeholder="&#xe80f;"></span>
+                </div>
+                <div class="container-login100-form-btn m-t-32">
+                    <input class="login100-form-btn" type="submit" name="add">
+                </div>
+                
+            </form>
+            </div>
+        </div>
+    </div>
+    
+    <!--===============================================================================================-->
 	<script src="vendorLogin/jquery/jquery-3.2.1.min.js"></script>
 <!--===============================================================================================-->
 	<script src="vendorLogin/animsition/js/animsition.min.js"></script>
@@ -180,4 +122,4 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
 </body>
-</html>
+

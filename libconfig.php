@@ -9,6 +9,6 @@
         echo "Error: unable to open database\n";
     }
     else{
-        echo "Connection successful\n";
+        //echo "Connection successful\n";
     }
 ?>
