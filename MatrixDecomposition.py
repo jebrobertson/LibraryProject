@@ -1,3 +1,4 @@
+#!/usr/bin/python
 try:
     import numpy
 except:
@@ -6,10 +7,16 @@ except:
 
 """
 @INPUT:
- 
+	R	: a matrix to factorize
+	P	: The user matrix
+	Q	: the book matrix
+	K	: Number of latent features
+	iterations	: number of times to optimize
+	alpha	: the rate of approaching the optimal solution
+	beta	: the regularization 
 """
 
-def matrix_decompisition(R, P, Q, K, iterations=5000, alpha=.0002, beta=.02):
+def matrix_decomposition(R, P, Q, K, iterations=5000, alpha=.0002, beta=.02):
     Q = Q.T
     for step in range(iterations):
         for i in range(len(R)):
@@ -20,12 +27,12 @@ def matrix_decompisition(R, P, Q, K, iterations=5000, alpha=.0002, beta=.02):
                         P[i][k] += 2 * alpha * error * Q[k][j] - alpha * beta * P[i][k]
                         Q[k][j] += 2 * alpha * error * P[i][k] - alpha * beta * Q[k][j]
 
-            eR = numby.dot(P,Q)
+            eR = numpy.dot(P,Q)
             totalError = 0
             for i in range(len(R)):
                 for j in range(len(R[i])):
                     if R[i][j] > 0:
-                        totalError += pow(R[i][j] - numby.dot(P[i], Q[:,j]), 2)
+                        totalError += pow(R[i][j] - numpy.dot(P[i], Q[:,j]), 2)
                         for k in range(K):
                             totalError += (beta/2) * ( pow(P[i][k], 2) + pow(Q[k][j], 2))
             if totalError < .001:
@@ -54,4 +61,7 @@ if __name__ == "__main__":
     P = numpy.random.rand(N,K)
     Q = numpy.random.rand(M,K)
 
-    nP, nQ = matrix_factorization(R, P, Q, K)
+    nP, nQ = matrix_decomposition(R, P, Q, K)
+    print(nP)
+    print(nQ)
+    print(nP @ nQ.T)
