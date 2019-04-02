@@ -6,11 +6,11 @@ DROP TABLE IF EXISTS Ratings;
 DROP TABLE IF EXISTS Log;
 CREATE TABLE Users(
 	UserID SERIAL,
-	Password varchar(50),
+	Password varchar(255),
 	Rank userRank,
-	Email varchar(50),
-	FirstName varchar(20),
-	LastName varchar(20),
+	Email varchar(255),
+	FirstName varchar(255),
+	LastName varchar(255),
 	PhoneNumber varchar(12),
 	PRIMARY KEY(UserID)
 );
@@ -18,10 +18,10 @@ CREATE TABLE Users(
 
 CREATE TABLE Books(
 	ISBN varchar(13) NOT NULL,
-	Authors varchar(100),
-	YearPublished numeric(4),
-	Title varchar(100),
-	Genre varchar(20),
+	Authors varchar(255),
+	YearPublished int,
+	Title varchar(255),
+	Genre varchar(255),
 	PRIMARY KEY(ISBN)
 );
 
@@ -50,7 +50,7 @@ CREATE TABLE Ratings(
 CREATE TABLE Log(
 	LogID SERIAL,
 	actionTime timestamp,
-	action varchar(20),
+	action varchar(255),
 	UserID int,
 	foreign key (UserID) references Users(UserID),
 	primary key (LogID)
