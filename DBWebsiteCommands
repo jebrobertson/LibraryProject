@@ -12,3 +12,16 @@ where users.userid=Rentals.userid and books.isbn = Rentals.isbn and Rentals.book
 
 add someone on to book queue
 insert into Rentals(UserID, ISBN, Status, DateUpdated) Values($userid, book isbn, 'In Queue', date);
+
+update rentals when book is returned
+update Rentals
+set bookstatus = 'Returned',
+set dateupdate = date
+where userid = xx and isbn = xx;
+
+update rentals when librarian checks out a book
+update Rentals
+set bookstatus = 'Rented Out'
+set dateupdate = date
+where userid = xx and isbn = xx;
+
