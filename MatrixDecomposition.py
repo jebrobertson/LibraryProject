@@ -1,4 +1,9 @@
-#!/usr/bin/python36
+#!/usr/bin/python3
+import psycopg2
+from scipy.linalg import svd
+from numpy import diag
+from numpy import zeros
+from numpy import array
 try:
     import numpy
 except:
@@ -16,54 +21,76 @@ except:
 	beta	: the regularization 
 """
 
-def matrix_decomposition(R, P, Q, K, iterations=50000, alpha=.0002, beta=.02):
-    Q = Q.T
+def matrix_decomposition(R, P, Q, K, iterations=5000, alpha=.0002, beta=.02):
     for step in range(iterations):
+        if step % 1000 == 0:
+            print(step)
+    
+        error = numpy.subtract(R, numpy.matmul(P,  Q.T))
         for i in range(len(R)):
-            for j in range(len(R[i])):
-                if R[i][j] > 0:
-                    error = R[i][j] - numpy.dot(P[i,:], Q[:,j])
-                    for k in range(K):
-                        oldP = P[i][k]
-                        P[i][k] += 2 * alpha * error * Q[k][j] - alpha * beta * P[i][k]
-                        Q[k][j] += 2 * alpha * error * P[i][k] - alpha * beta * Q[k][j]
-
-        eR = numpy.dot(P,Q)
-        totalError = 0
-        for i in range(len(R)):
-            for j in range(len(R[i])):
-                if R[i][j] > 0:
-                    totalError += pow(R[i][j] - numpy.dot(P[i, :], Q[:,j]), 2)
-                    for k in range(K):
-                        totalError += (beta/2) * ( pow(P[i][k], 2) + pow(Q[k][j], 2))
-        if totalError < .001:
-            print("Error Here")
-            break
-    return P, Q.T
+            for j in range(len(R[0])):
+                if R[i][j] == 0:
+                    error[i][j] = 0
+        P += alpha * numpy.subtract(2 * numpy.matmul(error , Q), beta * P)
+        Q += alpha * numpy.subtract(2 * numpy.matmul(error.T , P), beta * Q)
+    return P, Q
 
 
 
 
     
 if __name__ == "__main__":
-    R = [
-         [5,3,0,1],
-         [4,0,0,1],
-         [1,1,0,5],
-         [1,0,0,4],
-         [0,1,5,4],
-        ]
+    MAX_SIZE = 1000
+    
+    conn = psycopg2.connect(host="librarezdb.cbarom9u2wq0.us-east-2.rds.amazonaws.com", database="LibrarEZDB", user="librarEZAdmin",password="adminpass")
+    cur = conn.cursor()
+    cur.execute('SELECT COUNT(*) FROM users')
+    N = cur.fetchone()[0]
+    if N > MAX_SIZE:
+        N = MAX_SIZE
+    cur.execute('SELECT isbn FROM books')
+    M = cur.rowcount
+    
+    if M > MAX_SIZE:
+        M = MAX_SIZE
+    books = []
+    print("Number of books = " + str(M))
+    R = numpy.zeros([N,M])
+    rows = cur.fetchall()
+    count = 0
+    for count in range(M):
+        books.append(rows[count])
+        cur.execute('SELECT userid, userrating FROM ratings WHERE isbn=%s', rows[count])
+        for review in cur.fetchall():
+            id = review[0]
+            if id > MAX_SIZE:
+                continue
+            rating = review[1]
+            R[id][count] = rating
 
-    R = numpy.array(R)
+    print(R)
+#    R = numpy.array(R)
 
+
+    
     N = len(R)
     M = len(R[0])
     K = 2
 
     P = numpy.random.rand(N,K)
     Q = numpy.random.rand(M,K)
-
+    print("Starting matrix decomposition")
     nP, nQ = matrix_decomposition(R, P, Q, K)
-    print(nP)
-    print(nQ)
+    print("Finished") 
     print(numpy.matmul(nP, nQ.T))
+    print("Updating tables")
+    cur.execute("TRUNCATE TABLE factoredusers")
+    cur.execute("TRUNCATE TABLE factoredbooks")
+    for i in range(len(P)):
+        cur.execute("INSERT INTO factoredusers VALUES (%s, %s, %s)", (i, P[i][0], P[i][1]))
+    conn.commit()
+    for i in range(len(Q)):
+        cur.execute("INSERT INTO factoredbooks VALUES (%s, %s, %s)", (rows[i], Q[i][0], Q[i][1])) 
+    conn.commit()
+    cur.close()
+    conn.close()

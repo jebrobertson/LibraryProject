@@ -25,3 +25,5 @@ set bookstatus = 'Rented Out'
 set dateupdate = date
 where userid = xx and isbn = xx;
 
+Command to get top 10 rated books for a user
+SELECT (factoredusers.feature1 * factoredbooks.feature1 + factoredusers.feature2 * factoredbooks.feature2) AS estimate, isbn  FROM factoredusers, factoredbooks WHERE userid = 10 ORDER BY estimate DESC LIMIT 10;
