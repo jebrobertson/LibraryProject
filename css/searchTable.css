@@ -1,0 +1,24 @@
+table.searchTable {
+    border-collapse: collapse;
+    width: 100%;
+   // box-shadow: 50px 20px powderblue;
+}
+
+table.searchTable, table.searchTable th, table.searchTable td {
+}
+
+
+table.searchTable tr:nth-child(odd) {
+  background: lightgray;
+}
+
+table.searchTable th{
+   background-color: forestgreen;
+   padding: 10px;
+   border-bottom: 2px solid darkgray;
+}
+
+table.searchTable td{
+   padding: 10px;
+   border-bottom: 2px solid darkgray;
+}

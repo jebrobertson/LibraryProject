@@ -3,15 +3,21 @@
 //include config file
 require_once 'libconfig.php';
 
+//include "header.php";
+
 if(!empty($_POST['add'])){
-    //$pass = hash('md5', '$_POST[password]');
-    $query = "INSERT INTO login VALUES('$_POST[username]', '$_POST[password]')";
-    $result = pg_query($query);
+    //$pass = password_hash('$_POST[password]', 'md5');
+    //$pass = "md5('$_POST[$password]')";
+    $query = "Insert into users(password, email, rank, firstname, lastname, phonenumber) VALUES($1, $2, 'Default', $3, $4, $5)";
+    $result = pg_prepare($db, "", $query);
+    $result = pg_execute($db, "", array($_POST['password'], $_POST['username'], $_POST['firstname'], $_POST['lastname'], $_POST['phonenumber']));
+    //$query = "INSERT INTO login VALUES('$_POST[username]', '$_POST[password]')";
+    //$result = pg_query($query);
     if(!result){
         echo "Error occurred";
     }
     else{
-        echo "success";
+        //echo "success";
     }
 }
 
@@ -56,6 +62,7 @@ if(!empty($_POST['add'])){
 </html>
 
 <body>
+<!--
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
       <div class="container">
         <a class="navbar-brand" href="index.html">LibrarEZ</a>
@@ -78,18 +85,32 @@ if(!empty($_POST['add'])){
         </div>
       </div>
     </nav>
+
+-->
     <div class="limiter">
         <div class="container-login100" style="background-image: url('images/bg-01.jpg');">
             <div class="wrap-login100 p-t-30 p-b-50">
             <span class="login100-form-title p-b-41">Register</span>
             <form class="login100-form validate-form p-b-33 p-t-5" action="libregister.php" method="post">
                 <div class="wrap-input100 validate-input" data-validate = "Enter username">
-                    <input class="input100" type="text" name="username" placeholder="Create Username">
+                    <input class="input100" type="text" name="username" placeholder="Enter Email">
                     <span class="focus-input100" data-placeholder="&#xe82a;"></span>
                 </div>
                 <div class="wrap-input100 validate-input" data-validate="Enter password">
                     <input class="input100" type="password" name="password" placeholder="Create Password">
                     <span class="focus-input100" data-placeholder="&#xe80f;"></span>
+                </div>
+                <div class="wrap-input100 validate-input" data-validate="Enter username">
+                    <input class="input100" type="text" name="firstname" placeholder="Enter Firstname">
+                    <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+                </div>
+                 <div class="wrap-input100 validate-input" data-validate="Enter username">
+                    <input class="input100" type="text" name="lastname" placeholder="Enter Lastname">
+                    <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+                </div>
+                 <div class="wrap-input100 validate-input" data-validate="Enter username">
+                    <input class="input100" type="text" name="phonenumber" placeholder="Enter Phonenumber">
+                    <span class="focus-input100" data-placeholder="&#xe82a;"></span>
                 </div>
                 <div class="container-login100-form-btn m-t-32">
                     <input class="login100-form-btn" type="submit" name="add">
@@ -116,6 +137,7 @@ if(!empty($_POST['add'])){
 	<script src="vendorLogin/countdowntime/countdowntime.js"></script>
 <!--===============================================================================================-->
 	<script src="js/main.js"></script>
+    <?php include 'navbar.php';?>
     
      <!-- Bootstrap core JavaScript -->
     <script src="vendor/jquery/jquery.min.js"></script>

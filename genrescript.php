@@ -1,7 +1,7 @@
 <?php
     require_once 'libconfig.php';
 
-	$genre = array("Fantasy", "SciFi", "Romance", "Thriller", "Mystery", "Detective", "Biography");
+/*	$genre = array("Fantasy", "SciFi", "Romance", "Thriller", "Mystery", "Detective", "Biography");
 	$query = "select isbn from books";
 	$result = pg_query($query);
 $i = 0;
@@ -36,6 +36,7 @@ while ($row = pg_fetch_row($result))
 	//echo '</tr>';
 	$i = $i + 1;
 }
+*/
 //pg_free_result($result);
 
 //echo '</table></body></html>';

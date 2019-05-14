@@ -3,6 +3,8 @@
 //Include config file
 require_once 'libconfig.php';
 
+//include "header.php";
+
 
 //Define variables and initialize with empty values
 $username = $password = "";
@@ -30,29 +32,49 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     //validate credentials
     if(empty($username_err) && empty($password_err)){
         //try to prevent SQL-Injection
-        $query = 'SELECT * FROM login WHERE username=$1 AND password=$2';
+        //$hashpassword = hash('md5', $2);
+        
+	//USE THIS WHEN READY
+	$query = "SELECT * FROM users where email = $1 and password = $2";
+	$result = pg_prepare($db, "", $query);
+	$result = pg_execute($db, "", array($_POST['username'], $_POST['password']));
+
+
+	//$query = 'SELECT * FROM login WHERE username=$1 and password = ($2)';
+        //$e = md5($2);
         //$result = pg_query_params($db, $query, array($_POST["username"], $_POST["password"]));
-        $result = pg_prepare($db, "", $query);
-        $result = pg_execute($db, "", array($_POST["username"], $_POST["password"]));
+        //$hash = pg_query($db, "SELECT password FROM login WHERE username='$_POST[username]'");
+        //$arr = pg_fetch_array($hash);
+        //echo $arr[0];
+    
+        //$result = pg_prepare($db, "", $query);
+        //$result = pg_execute($db, "", array($_POST["username"], $_POST["password"]));
         if(!result){
             echo "result null";
         }
         else{
             echo "result good";
+            echo $query;
+            //echo $e;
             $rows = pg_num_rows($result);
             echo $rows . "row(s) returned.\n";
         }
         
         if(pg_num_rows($result) < 1){
             echo nl2br("Username or Password does not exist.\n Please Try Again.\n Page will refresh in 5\n");
-            header('Refresh: 5; URL=http://ec2-3-94-120-99.compute-1.amazonaws.com');
+            header('Refresh: 10; URL=http://ec2-3-94-120-99.compute-1.amazonaws.com');
         }
-        else if(pg_num_rows($result) == 1){
+        else if (pg_num_rows($result) == 1) {
             //save username to session
             session_start();
-            $_SESSION['username'] = $username;
-            header("location: index.html");
-        }
+            while ($row = pg_fetch_row($result)){
+		$_SESSION['userID'] = $row[0];
+		$_SESSION['rank'] = $row[2];
+		$_SESSION['username'] = $row[3];
+            	
+		header("location: index.php");
+            }
+	}
     }
 
 
@@ -103,6 +125,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
 </head>
 <body>
+<!--
      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
       <div class="container">
         <a class="navbar-brand" href="index.html">LibrarEZ</a>
@@ -112,7 +135,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item active">
-              <a class="nav-link" href="index.html">Home
+              <a class="nav-link" href="index.php">Home
               </a>
             </li>
             <li class="nav-item">
@@ -125,7 +148,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         </div>
       </div>
     </nav>
-	
+-->	
 	<div class="limiter">
 		<div class="container-login100" style="background-image: url('images/bg-01.jpg');">
 			<div class="wrap-login100 p-t-30 p-b-50">
@@ -135,7 +158,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 				<form class="login100-form validate-form p-b-33 p-t-5" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
 
 					<div class="wrap-input100 validate-input" data-validate = "Enter username">
-						<input class="input100" type="text" name="username" placeholder="User name">
+						<input class="input100" type="text" name="username" placeholder="Email">
 						<span class="focus-input100" data-placeholder="&#xe82a;"></span>
 					</div>
 
@@ -174,6 +197,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 	<script src="vendorLogin/countdowntime/countdowntime.js"></script>
 <!--===============================================================================================-->
 	<script src="js/main.js"></script>
+     <?php include 'navbar.php';?>
     
      <!-- Bootstrap core JavaScript -->
     <script src="vendor/jquery/jquery.min.js"></script>

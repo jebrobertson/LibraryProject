@@ -1,0 +1,28 @@
+.bookHolder {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.bookInfo{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+
+    flex: 3 0 50%;
+    padding: 10px;
+}
+
+.bookTitle {
+    flex: 0;
+    
+    font-size: 2em;
+}
+
+.bookAuthor {
+    flex: 0;
+}
+
+.bookImg { 
+   flex: 1 0  content;
+}
