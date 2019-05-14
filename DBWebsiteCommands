@@ -1,0 +1,29 @@
+book reservations
+view queue of a certain book
+select Users.firstname, Users.lastname, Users.email, Rentals.dateupdated 
+from Users, Rentals 
+where Users.UserID = Rentals.UserID and Rentals.isbn = xxxx and Rentals.bookStatus='In Queue' 
+order by dateupdated;
+
+view list of currently checked out books 
+select Users.firstname, Users.lastname, Users.email, Books.Title, Books.isbn, Rentals.dateupdated
+from Users, Books, Rentals
+where users.userid=Rentals.userid and books.isbn = Rentals.isbn and Rentals.bookstatus = 'Rented Out';
+
+add someone on to book queue
+insert into Rentals(UserID, ISBN, Status, DateUpdated) Values($userid, book isbn, 'In Queue', date);
+
+update rentals when book is returned
+update Rentals
+set bookstatus = 'Returned',
+set dateupdate = date
+where userid = xx and isbn = xx;
+
+update rentals when librarian checks out a book
+update Rentals
+set bookstatus = 'Rented Out'
+set dateupdate = date
+where userid = xx and isbn = xx;
+
+Command to get top 10 rated books for a user
+SELECT (factoredusers.feature1 * factoredbooks.feature1 + factoredusers.feature2 * factoredbooks.feature2) AS estimate, isbn  FROM factoredusers, factoredbooks WHERE userid = 10 ORDER BY estimate DESC LIMIT 10;
