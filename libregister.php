@@ -10,7 +10,7 @@ if(!empty($_POST['add'])){
     //$pass = "md5('$_POST[$password]')";
     $query = "Insert into users(password, email, rank, firstname, lastname, phonenumber) VALUES($1, $2, 'Default', $3, $4, $5)";
     $result = pg_prepare($db, "", $query);
-    $result = pg_execute($db, "", array($_POST['password'], $_POST['username'], $_POST['firstname'], $_POST['lastname'], $_POST['phonenumber']));
+    $result = pg_execute($db, "", array(password_hash($_POST['password'], PASSWORD_DEFAULT), $_POST['username'], $_POST['firstname'], $_POST['lastname'], $_POST['phonenumber']));
     //$query = "INSERT INTO login VALUES('$_POST[username]', '$_POST[password]')";
     //$result = pg_query($query);
     if(!result){

@@ -35,11 +35,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         //$hashpassword = hash('md5', $2);
         
 	//USE THIS WHEN READY
-	$query = "SELECT * FROM users where email = $1 and password = $2";
+	$query = "SELECT * FROM users where email = $1";
 	$result = pg_prepare($db, "", $query);
-	$result = pg_execute($db, "", array($_POST['username'], $_POST['password']));
+	$result = pg_execute($db, "", array($_POST['username']));
 
-
+	
 	//$query = 'SELECT * FROM login WHERE username=$1 and password = ($2)';
         //$e = md5($2);
         //$result = pg_query_params($db, $query, array($_POST["username"], $_POST["password"]));
@@ -49,31 +49,32 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     
         //$result = pg_prepare($db, "", $query);
         //$result = pg_execute($db, "", array($_POST["username"], $_POST["password"]));
+        
         if(!result){
             echo "result null";
         }
         else{
-            echo "result good";
-            echo $query;
+            //echo "result good";
+            //echo $query;
             //echo $e;
             $rows = pg_num_rows($result);
-            echo $rows . "row(s) returned.\n";
+            //echo $rows . "row(s) returned.\n";
         }
-        
-        if(pg_num_rows($result) < 1){
-            echo nl2br("Username or Password does not exist.\n Please Try Again.\n Page will refresh in 5\n");
-            header('Refresh: 10; URL=http://ec2-3-94-120-99.compute-1.amazonaws.com');
+        $arr = pg_fetch_assoc($result);
+        //echo $arr['password']."\n";
+        //echo $_POST['password'];
+        if(!password_verify($_POST['password'],$arr['password'])){
+            echo "Username or Password does not exist.\n Please Try Again.\n";
+            //header('Refresh: 10; URL=http://ec2-3-94-120-99.compute-1.amazonaws.com');
         }
-        else if (pg_num_rows($result) == 1) {
+        else {
             //save username to session
             session_start();
-            while ($row = pg_fetch_row($result)){
-		$_SESSION['userID'] = $row[0];
-		$_SESSION['rank'] = $row[2];
-		$_SESSION['username'] = $row[3];
+		$_SESSION['userID'] = $arr['userid'];
+		$_SESSION['rank'] = $arr['rank'];
+		$_SESSION['username'] = $arr['email'];
             	
 		header("location: index.php");
-            }
 	}
     }
 
