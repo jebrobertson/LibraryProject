@@ -30,7 +30,10 @@
               ?>
               <li class="nav-item">
               <a class="nav-link" href="viewQueue.php">View Queue</a>
-            </li>
+              </li>
+              <li class="nav-item">
+              <a class="nav-link" href="addBook.php">Add Book</a>
+              </li>
               <?php
               }
                 ?>
